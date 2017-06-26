@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html>
+	<meta charset = "UTF-8"/>
+	<title>Making Cents</title>
+	<script src = "phaser.js"></script>
+	
+	<script src = "Setup.js"></script>
+	<script src = "Preloader.js"></script>
+	<script src = "MainMenu.js"></script>
+	<script src = "FindingCost.js"></script>
+	<script src = "Making Cents.js"></script>
+	
+	
+	<body>
+	<script type = "text/javascript">
+		window.onload = function(){
+			
+			var game = new Phaser.Game(800, 600, Phaser.AUTO, '');
+			
+			game.state.add('Setup', Game.Setup)
+			game.state.add('Preloader', Game.Preloader);
+			game.state.add('MainMenu', Game.MainMenu);
+			game.state.add('FindingCost', Game.FindingCost);
+			game.state.add('Making_Cents', Game.Making_Cents);
+			
+			game.state.start('Setup');
+			
+		};
+		
+	</script>
+	
+	</body>
+	
+	
+</html>
