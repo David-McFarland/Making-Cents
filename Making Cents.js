@@ -1,71 +1,127 @@
 var coins;
 var coinsInBank;
+var win = false;
+
+var restart = true;
+var hardRestart = false;
+
+var coinsLeft;
+var coinsLeftText;
+var coinTarget;
 Game.Making_Cents = function(game){};
 
 Game.Making_Cents.prototype = {
 	
 	
 	create: function(game) {
+		win = false;
 		
-		coinsInBank = 0;
-		game.add.text(0, 0, totalCost, { font: "bold 48px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" });
 		
-		coins = game.add.text(0, 50, 0, { font: "bold 48px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" });
+		
+		if(hardRestart){
+			totalCost = Math.floor(Math.random()*99)+1;
+		}
+		
+		totalCost %= 100;
+		if(totalCost == 0){
+			totalCost = 99;
+		}
+		
+		var tempNum = totalCost;
+		coinsLeft = 0;
+		while(tempNum != 0){
+			if(tempNum >= 25){
+				tempNum -= 25;
+			}
+			else if(tempNum >= 10){
+				tempNum -= 10;
+			}
+			else if(tempNum >= 5){
+				tempNum -= 5;
+			}
+			else{
+				tempNum--;
+			}
+			
+			coinsLeft++;
+		}
+		coinTarget = coinsLeft;
+		
+		coinsLeftText = game.add.text(780, 0, 
+		"Coins Left: Inf",
+		{ font: "bold 48px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" });
+		
+		if(mode == 1){
+			coinsLeft *= 2;
+			coinTarget *= 2;
+		}
+		if(mode != 0){
+			coinsLeftText.text = "Coins Left: " + coinsLeft;
+		}
+		coinsLeftText.anchor.setTo(1, 0);
+		
+		
+		createButton(game, "?", game.world.width-25, game.world.height-25, 50, 50, 
+		{ font: "bold 48px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" },
+		function(){
+			//Make popup that helps
+			
+			game1 = false;
+			game2 = true;
+			bothGames = false;
+			difficulty = false;
+			restart = false;
+			
+			game.state.start('Instruction');
+			
+
+		});
+		
+		if(restart){
+			coinsInBank = 0;
+		}
+		
+		game.add.text(0, 0, 'Target: ' + totalCost, { font: "bold 48px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" });
+		
+		coins = game.add.text(0, 50, 'Coins in bank: ' + coinsInBank, { font: "bold 48px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" });
 		
 		this.createButton(game, "Menu", game.world.centerX, 16, 100, 33, 
 		function(){
-			this.state.start('MainMenu');
+			game.state.start('MainMenu');
 		});
-		this.stage.backgroundColor = '#3AFFFF';
+		//this.stage.backgroundColor = '#3AFFFF';
 		
 		game.physics.startSystem(Phaser.Physics.ARCADE);
 
 		piggyBank = game.add.sprite(340, 450, 'piggybank');
+
 		
-		penny = game.add.sprite(25, 325, 'penny');
-		penny.initialX = 25;
-		penny.initialY = 325;
+		penny = game.add.sprite(175, 150, 'penny');
+		penny.initialX = 175;
+		penny.initialY = 150;
 		penny.value = 1;
 		penny.events.onDragStop.add(onDragStop, this);
-		penny.rotation = -1;
    	
-		nickel = game.add.sprite(90, 154, 'nickel');
-		nickel.initialX = 90;
-		nickel.initialY = 154;
+		nickel = game.add.sprite(300, 150, 'nickel');
+		nickel.initialX = 300;
+		nickel.initialY = 150;
 		nickel.value = 5;
 		nickel.events.onDragStop.add(onDragStop, this);
-		nickel.rotation = -.7
    	
-		dime = game.add.sprite(277, 74, 'dime');
-		dime.initialX = 277;
-		dime.initialY = 74;
+		dime = game.add.sprite(425, 150, 'dime');
+		dime.initialX = 425;
+		dime.initialY = 150;
 		dime.value = 10;
 		dime.events.onDragStop.add(onDragStop, this);
-		dime.rotation = -0.2;
    	
 	
-		quarter = game.add.sprite(453, 35, 'quarter');
-		quarter.initialX = 453;
-		quarter.initialY = 35;
+		quarter = game.add.sprite(550, 150, 'quarter');
+		quarter.initialX = 550;
+		quarter.initialY = 150;
 		quarter.value = 25;
 		quarter.events.onDragStop.add(onDragStop, this);
-		quarter.rotation = 0.2;
    	
-		halfDollarCoin = game.add.sprite(627, 106, 'halfdollarcoin');
-		scaleItem(100, 100, halfDollarCoin);
-		halfDollarCoin.initialX = 627;
-		halfDollarCoin.initialY = 106;
-		halfDollarCoin.value = 50;
-		halfDollarCoin.events.onDragStop.add(onDragStop, this);
-		halfDollarCoin.rotation = 0.7;
-   	
-		dollarCoin = game.add.sprite(726, 254, 'dollarcoin');
-		scaleItem(100, 100, dollarCoin);
-		dollarCoin.initialX = 726;
-		dollarCoin.initialY = 254;
-		dollarCoin.value = 100;
-		dollarCoin.events.onDragStop.add(onDragStop, this);
-		dollarCoin.rotation = 1.0;
+		
 	
 	
 		penny.inputEnabled = true;
@@ -80,18 +136,16 @@ Game.Making_Cents.prototype = {
 		quarter.inputEnabled = true;
 		quarter.input.enableDrag(true);
 		
-		halfDollarCoin.inputEnabled = true;
-		halfDollarCoin.input.enableDrag(true);
-		
-		dollarCoin.inputEnabled = true;
-		dollarCoin.input.enableDrag(true);
 		
 		
    	
 	},
 	
-	update: function(){
+	update: function(game){
 		
+		if(win){
+			game.state.start('Transition2');
+		}
 		
 	},
 	
@@ -105,6 +159,8 @@ Game.Making_Cents.prototype = {
 		var txt = game.add.text(button1.x, button1.y, string, {font:"14px Arial", fill:"#fff", align:"center"});
 		
 		txt.anchor.setTo(0.5,0.5);
+		
+		restart = true;
 	}
 
 }
@@ -114,14 +170,23 @@ function onDragStop(sprite, pointer){
 			sprite.position.x=sprite.initialX;
 			sprite.position.y=sprite.initialY;
 			coinsInBank += sprite.value
-			coins.text = coinsInBank;
+			coins.text = 'Coins in bank: ' + coinsInBank;
 			//console.log(coinsInBank);
 			console.log(coinsInBank);
+			if(mode != 0){
+				coinsLeft--;
+				coinsLeftText.text = "Coins Left: " + coinsLeft;
+			}
 	}
-	if(coinsInBank > totalCost){
+	if(coinsInBank == totalCost){
+		win = true;
+	}
+	if(coinsInBank > totalCost || coinsLeft == 0){
 		coinsInBank = 0;
-		coins.text = 0;
+		coins.text = "Coins in Bank: " + coinTarget;
+		coinsLeft = coinTarget;
 	}
+	
 	
 }
 
